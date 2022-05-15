@@ -1,4 +1,4 @@
-package com.katas.bankaccountkata.bankaccountkata;
+package com.katas.bankaccountkata;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
