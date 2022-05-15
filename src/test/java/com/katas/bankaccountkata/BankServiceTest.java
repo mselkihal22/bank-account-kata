@@ -2,6 +2,7 @@ package com.katas.bankaccountkata;
 
 import com.katas.bankaccountkata.domain.Account;
 import com.katas.bankaccountkata.domain.Client;
+import com.katas.bankaccountkata.exceptions.OperationException;
 import com.katas.bankaccountkata.service.BankService;
 import com.katas.bankaccountkata.service.BankServiceImpl;
 import org.junit.Before;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class BankServiceTest {
 
@@ -37,14 +39,57 @@ public class BankServiceTest {
     @Test
     public void itShouldNotMakeDepositIntoBankAccountWhenAmountIsNegative() {
         BigDecimal amount = new BigDecimal(-600);
-        bankService.depositToAccount(account, amount);
-        assertThat((amount)).isEqualTo(account.getBalance());
+        try{
+            bankService.depositToAccount(account, amount);
+            fail("Exception should be thrown for negative Amount");
+        }catch (OperationException exception){
+            assert (exception.getMessage().contains("cannot deposit to the account"));
+        }
     }
 
     @Test
     public void itShouldNotMakeDepositIntoBankAccountWhenAccountIsNull() {
         BigDecimal amount = new BigDecimal(-500);
-        bankService.depositToAccount(null, amount);
-        assertThat((amount)).isEqualTo(account.getBalance());
+        try{
+            bankService.depositToAccount(account, amount);
+            fail("Exception should be thrown for negative Amount");
+        }catch (OperationException exception){
+            assert (exception.getMessage().contains("cannot deposit to the account"));
+        }
+    }
+
+    @Test
+    public void itShouldMakeWithdrawalfromBankAccount() {
+        BigDecimal accountBalance = new BigDecimal(1000);
+        BigDecimal amount = new BigDecimal(50);
+        account.setBalance(accountBalance);
+        bankService.withdrawFromAccount(account, amount);
+        assertThat(accountBalance.subtract(amount)).isEqualTo(account.getBalance());
+    }
+
+    @Test
+    public void itShouldNotMakeWithdrawalWhenAmountIsInvalid() {
+        BigDecimal accountBalance = new BigDecimal(100);
+        account.setBalance(accountBalance);
+        BigDecimal amount = new BigDecimal(500);
+        try{
+            bankService.withdrawFromAccount(account, amount);
+            fail("Exception should be thrown when amount is greater than account balance");
+        }catch (OperationException exception){
+            assert (exception.getMessage().contains("cannot withdraw amount"));
+        }
+    }
+
+    @Test
+    public void itShouldNotMakeWithdrawalWhenAccountWhenAccountIsNull() {
+        BigDecimal accountBalance = new BigDecimal(1000);
+        account.setBalance(accountBalance);
+        BigDecimal amount = new BigDecimal(500);
+        try{
+            bankService.withdrawFromAccount(null, amount);
+            fail("Exception should be thrown when account is null");
+        }catch (IllegalArgumentException exception){
+            assert (exception.getMessage().contains("Account must not be null"));
+        }
     }
 }

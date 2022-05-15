@@ -21,6 +21,17 @@ public class BankServiceImpl implements BankService {
         addTransaction(account, amount, AccountTransactionType.DEPOSIT);
     }
 
+    @Override
+    public void withdrawFromAccount(Account account, BigDecimal amount) {
+        if (account == null) {
+            throw new IllegalArgumentException("Account must not be null");
+        }
+        if (amount.compareTo(account.getBalance()) > 0 || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new OperationException("cannot withdraw amount: " + amount + " from account: "+account.getId());
+        }
+        account.setBalance(account.getBalance().subtract(amount));
+        addTransaction(account, amount, AccountTransactionType.WITHDRAWAL);
+    }
 
     private void addTransaction(Account account, BigDecimal amount, AccountTransactionType operationType) {
         List<AccountTransaction> accountTransactions = account.getTransactions();
