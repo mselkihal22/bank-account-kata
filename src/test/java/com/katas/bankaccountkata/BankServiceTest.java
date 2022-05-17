@@ -103,6 +103,7 @@ public class BankServiceTest {
         StringBuilder ExpectedStatementHistory = new StringBuilder();
         account.getTransactions().forEach(accountTransaction ->
                 ExpectedStatementHistory.append(OPERATION)
+                        .append(accountTransaction.getAccountTransactionType())                  
                         .append(SEPARATOR)
                         .append(AMOUNT)
                         .append(accountTransaction.getAccountTransactionType().equals(AccountTransactionType.WITHDRAWAL) ?
