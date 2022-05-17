@@ -1,6 +1,7 @@
 package com.katas.bankaccountkata;
 
 import com.katas.bankaccountkata.domain.Account;
+import com.katas.bankaccountkata.domain.AccountTransactionType;
 import com.katas.bankaccountkata.domain.Client;
 import com.katas.bankaccountkata.exceptions.OperationException;
 import com.katas.bankaccountkata.service.BankService;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
+import static com.katas.bankaccountkata.constatns.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -39,10 +41,10 @@ public class BankServiceTest {
     @Test
     public void itShouldNotMakeDepositIntoBankAccountWhenAmountIsNegative() {
         BigDecimal amount = new BigDecimal(-600);
-        try{
+        try {
             bankService.depositToAccount(account, amount);
             fail("Exception should be thrown for negative Amount");
-        }catch (OperationException exception){
+        } catch (OperationException exception) {
             assert (exception.getMessage().contains("cannot deposit to the account"));
         }
     }
@@ -50,10 +52,10 @@ public class BankServiceTest {
     @Test
     public void itShouldNotMakeDepositIntoBankAccountWhenAccountIsNull() {
         BigDecimal amount = new BigDecimal(-500);
-        try{
+        try {
             bankService.depositToAccount(account, amount);
             fail("Exception should be thrown for negative Amount");
-        }catch (OperationException exception){
+        } catch (OperationException exception) {
             assert (exception.getMessage().contains("cannot deposit to the account"));
         }
     }
@@ -72,10 +74,10 @@ public class BankServiceTest {
         BigDecimal accountBalance = new BigDecimal(100);
         account.setBalance(accountBalance);
         BigDecimal amount = new BigDecimal(500);
-        try{
+        try {
             bankService.withdrawFromAccount(account, amount);
             fail("Exception should be thrown when amount is greater than account balance");
-        }catch (OperationException exception){
+        } catch (OperationException exception) {
             assert (exception.getMessage().contains("cannot withdraw amount"));
         }
     }
@@ -85,11 +87,36 @@ public class BankServiceTest {
         BigDecimal accountBalance = new BigDecimal(1000);
         account.setBalance(accountBalance);
         BigDecimal amount = new BigDecimal(500);
-        try{
+        try {
             bankService.withdrawFromAccount(null, amount);
             fail("Exception should be thrown when account is null");
-        }catch (IllegalArgumentException exception){
+        } catch (IllegalArgumentException exception) {
             assert (exception.getMessage().contains("Account must not be null"));
         }
     }
+
+    @Test
+    public void itShouldPrintAccountStatementHistory() {
+        bankService.depositToAccount(account, new BigDecimal(1000));
+        bankService.withdrawFromAccount(account, new BigDecimal(350));
+        bankService.withdrawFromAccount(account, new BigDecimal(250));
+        StringBuilder ExpectedStatementHistory = new StringBuilder();
+        account.getTransactions().forEach(accountTransaction ->
+                ExpectedStatementHistory.append(OPERATION)
+                        .append(SEPARATOR)
+                        .append(AMOUNT)
+                        .append(accountTransaction.getAccountTransactionType().equals(AccountTransactionType.WITHDRAWAL) ?
+                                accountTransaction.getAmount().negate().toString()
+                                : accountTransaction.getAmount().toString())
+                        .append(SEPARATOR)
+                        .append(BALANCE)
+                        .append(accountTransaction.getBalance())
+                        .append(SEPARATOR)
+                        .append(DATE)
+                        .append(accountTransaction.getDate().format(DATE_FORMATTER))
+                        .append(LINE_SEPARATOR));
+
+        assertThat(bankService.accountStatementsHistory(account)).isEqualTo(ExpectedStatementHistory.toString());
+    }
+
 }

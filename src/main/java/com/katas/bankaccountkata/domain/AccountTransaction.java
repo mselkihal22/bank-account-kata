@@ -23,8 +23,12 @@ public class AccountTransaction {
     @Override
     public String toString() {
         return new StringBuilder()
+                .append(OPERATION)
+                .append(getAccountTransactionType())
+                .append(SEPARATOR)
                 .append(AMOUNT)
-                .append(getAmount().toString())
+                .append(getAccountTransactionType().equals(AccountTransactionType.WITHDRAWAL) ?
+                        getAmount().negate().toString() : getAmount().toString())
                 .append(SEPARATOR)
                 .append(BALANCE)
                 .append(getBalance())
