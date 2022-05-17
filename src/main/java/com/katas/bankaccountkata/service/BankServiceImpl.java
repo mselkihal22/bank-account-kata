@@ -4,6 +4,7 @@ import com.katas.bankaccountkata.domain.Account;
 import com.katas.bankaccountkata.domain.AccountTransaction;
 import com.katas.bankaccountkata.domain.AccountTransactionType;
 import com.katas.bankaccountkata.exceptions.OperationException;
+import com.katas.bankaccountkata.util.AccountStatementPrinter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,6 +32,11 @@ public class BankServiceImpl implements BankService {
         }
         account.setBalance(account.getBalance().subtract(amount));
         addTransaction(account, amount, AccountTransactionType.WITHDRAWAL);
+    }
+
+    @Override
+    public String accountStatementsHistory(Account account) {
+        return AccountStatementPrinter.printAccountStatementsHistory(account);
     }
 
     private void addTransaction(Account account, BigDecimal amount, AccountTransactionType operationType) {

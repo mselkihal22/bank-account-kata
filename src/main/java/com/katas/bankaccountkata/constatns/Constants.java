@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Constants {
 
-
+    public static final String OPERATION = " Operation: ";
     public static final String AMOUNT = " Amount: ";
     public static final String BALANCE = "Balance: ";
     public static final String DATE = "Date: ";
